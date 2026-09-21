@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f7f6 !important;
+}
+
+.bg-primary-dark {
+    background-color: #1a2332;
+}
+
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.divida-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.08)!important;
+}
+
+.btn-primary {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
+.btn-outline-primary {
+    color: #2563eb;
+    border-color: #2563eb;
+}
+
+.btn-outline-primary:hover {
+    background-color: #2563eb;
+    color: #fff;
+}
+
+.form-control, .form-select {
+    padding: 0.6rem 1rem;
+    border-radius: 0.5rem;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.25);
+    border-color: #2563eb;
+}

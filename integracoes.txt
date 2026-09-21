@@ -1,0 +1,8 @@
+const firebaseConfig = {
+  apiKey: "AIzaSyCORLSNDV-v9vbrVuaBJoie-rhhhu3YMo4",
+  authDomain: "organiza-dd763.firebaseapp.com",
+  projectId: "organiza-dd763",
+  storageBucket: "organiza-dd763.firebasestorage.app",
+  messagingSenderId: "322601953698",
+  appId: "1:322601953698:web:bbb2e3b5e4b32a33096afb"
+};

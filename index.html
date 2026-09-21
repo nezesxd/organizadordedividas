@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanças | Gestão de Dívidas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-light">
+
+    <!-- Navbar sem o botão de sair -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#"><i class="fa-solid fa-wallet me-2"></i>Gestor Financeiro</a>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-6">
+                <h2 class="fw-bold text-dark mb-0">Minhas Dívidas</h2>
+                <p class="text-muted">Gerencie seus compromissos mensais</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <button class="btn btn-outline-primary me-2 mb-2 mb-md-0" data-bs-toggle="modal" data-bs-target="#modalMes">
+                    <i class="fa-solid fa-calendar-plus me-1"></i> Novo Mês
+                </button>
+                <button class="btn btn-primary mb-2 mb-md-0" data-bs-toggle="modal" data-bs-target="#modalDivida" id="btnNovaDivida" disabled>
+                    <i class="fa-solid fa-plus me-1"></i> Nova Dívida
+                </button>
+            </div>
+        </div>
+
+        <!-- Seletor de Mês e Resumo -->
+        <div class="card border-0 shadow-sm mb-4 rounded-4">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-5">
+                        <label class="form-label fw-semibold text-muted">Selecione o Mês Base</label>
+                        <div class="input-group input-group-lg">
+                            <select class="form-select shadow-none border-secondary-subtle" id="selectMeses">
+                                <option value="">Carregando meses...</option>
+                            </select>
+                            <button class="btn btn-outline-danger" type="button" id="btnExcluirMes" disabled title="Apagar Mês Inteiro">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-7 text-md-end mt-3 mt-md-0">
+                        <h5 class="text-muted mb-1">
+                            Total a Pagar (Restante)
+                            <span id="badgeMesQuitado" class="badge bg-success d-none ms-2"><i class="fa-solid fa-check-double me-1"></i> Mês Quitado</span>
+                        </h5>
+                        <h2 class="fw-bold text-danger mb-0" id="totalMes">R$ 0,00</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Dívidas -->
+        <div class="row" id="listaDividas"></div>
+    </div>
+
+    <!-- Modal Novo Mês -->
+    <div class="modal fade" id="modalMes" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold">Cadastrar Mês</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formMes">
+                        <div class="mb-3">
+                            <label class="form-label">Nome do Mês / Ano (Ex: Setembro 2026)</label>
+                            <input type="text" class="form-control" id="nomeMes" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 rounded-3">Salvar Mês</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nova Dívida -->
+    <div class="modal fade" id="modalDivida" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold">Cadastrar Dívida</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formDivida">
+                        <div class="mb-3">
+                            <label class="form-label text-primary fw-semibold">Mês de Referência (1ª parcela)</label>
+                            <select class="form-select bg-light" id="mesDividaModal" required></select>
+                        </div>
+                        
+                        <div class="form-check form-switch mb-3 bg-light p-2 rounded-3 border">
+                            <input class="form-check-input ms-1" type="checkbox" id="temParcelamento">
+                            <label class="form-check-label fw-semibold ms-2 text-dark" for="temParcelamento">Repetir em outros meses?</label>
+                        </div>
+                        <div class="mb-4 d-none" id="divParcelamento">
+                            <label class="form-label text-muted small mb-1">Selecione os meses adicionais:</label>
+                            <div id="listaMesesParcelamento" class="border rounded-3 p-2 bg-white shadow-sm" style="max-height: 140px; overflow-y: auto;">
+                                <!-- Checkboxes gerados pelo JS -->
+                            </div>
+                        </div>
+                        <hr>
+
+                        <div class="mb-3">
+                            <label class="form-label">Descrição da Dívida</label>
+                            <input type="text" class="form-control" id="nomeDivida" placeholder="Ex: Fatura Cartão" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Valor (R$)</label>
+                            <input type="number" step="0.01" class="form-control" id="valorDivida" required>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="temDataLimite">
+                            <label class="form-check-label" for="temDataLimite">Possui data limite para pagamento?</label>
+                        </div>
+                        <div class="mb-4 d-none" id="divDataLimite">
+                            <label class="form-label">Data Limite</label>
+                            <input type="date" class="form-control" id="dataLimiteDivida">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 rounded-3">Adicionar Dívida</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Dívida -->
+    <div class="modal fade" id="modalEditarDivida" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold">Editar Dívida</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEditarDivida">
+                        <input type="hidden" id="idDividaEdit">
+                        <div class="mb-3">
+                            <label class="form-label text-primary fw-semibold">Mês de Referência</label>
+                            <select class="form-select bg-light" id="mesDividaModalEdit" required></select>
+                        </div>
+                        <hr>
+                        <div class="mb-3">
+                            <label class="form-label">Descrição da Dívida</label>
+                            <input type="text" class="form-control" id="nomeDividaEdit" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Valor (R$)</label>
+                            <input type="number" step="0.01" class="form-control" id="valorDividaEdit" required>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="temDataLimiteEdit">
+                            <label class="form-check-label" for="temDataLimiteEdit">Possui data limite para pagamento?</label>
+                        </div>
+                        <div class="mb-4 d-none" id="divDataLimiteEdit">
+                            <label class="form-label">Data Limite</label>
+                            <input type="date" class="form-control" id="dataLimiteDividaEdit">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 rounded-3">Salvar Alterações</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de Notificação -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+        <div id="appToast" class="toast align-items-center text-white border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body fw-medium" id="toastMessage"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html> 
